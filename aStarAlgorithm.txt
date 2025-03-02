@@ -1,0 +1,248 @@
+Assalomu Alaykum!
+
+A-star — bu dasturiy ta’minotda yo’lni qidirish algoritmi bo’lib, eng qisqa yo’lni topish maqsadida ishlatiladi.
+
+A-star algoritmi o’yinlarda, robototexnikada va geografik ma’lumotlarni qayta ishlashda yo’lni rejalashtirishda foydalaniladi.
+
+Misol qilib GoogleMap ni oladigan bo’lsak, biz manzilni qidirganimizda u eng yaqin va eng qulay bolgan yollarni qidirishda A-star algorithmdan foydalanadi.
+
+
+Bugungi blogimda Python tili orqali a-star algorithmi qanday ishlashini korsatib beraman.
+
+class Node:
+    def __init__(self, parent=None, Position=None):
+        self.parent = parent    # Avvalgi Node
+        self.position = position    # Hozirgi joylashuv
+        
+        self.f = 0
+        self.g = 0
+        self.h = 0
+F=G+H
+
+Node = Joylashuv nuqtasi, Cost = Ketqazilagan harakat
+F = Jo’nab ketiladigan joydan Manzilgacha umumiy ‘cost’
+G = Hozirgi Node’dan Jo’nab ketiladigan joygacha umumiy cost
+H = Heuristic, Hozirgi Node’dan manzilgacha bo’lgan yo’l
+G(x)
+
+G = Hozirgi Node’dan Jo’nab ketiladigan joygacha umumiy cost , Hozirgi Node= node(2) bolsa, Jonab ketadigan Nuqtadan ‘2 cost’ oraliqda joylashgan hisoblanadi. (parent Nodeni node(1) undan bir qadam ortdagiligi uchun) shunday qilib, hozirgi Node(2)ni Misolini:
+
+node(2).g = 2
+H(x)
+
+H = Heuristic, Hozirgi Node’dan manzilgacha bo’lgan yo’l
+
+Hozirgi Node = node(2)bo’lsa manzilgacha bo’lgan yolni hisoblab ko’ramiz (Hozirgi Node’ni q deb faraz qilamiz)
+
+5 cost miqdorda o’ng tomonga borib, tepaga 3 cost miqdorda borsa manzil Node(nuqtasi) joylashgan
+
+node(2).h = 5² + 3² = 34 (Pifagor)
+
+def heuristic(node, goal, D=1, D2=2 ** 0.5):
+    dx = abs(node.position[0] - goal.position[0])
+    dy = abs(node.position[1] - goal.position[1])
+    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+    
+...
+child.h = heuristic(child, endNode)
+...
+F(x)
+
+F = Jo’nab ketiladigan joydan Manzilgacha umumiy ‘cost’. Endi Hozirrgi Node(nuqta) (node(2))의 G bilan H ni Qo’shsak, node(2).f = node(2).g + node(2).h = 2+34 = 36
+
+Kodlarsiz tushuncha
+
+/* A* Xususiyatlari
+1. openList bilan closeList kabi yordamchi datalardan foydalanadi.
+2. F = G + H formulasi har safar Node yaratilganda hisoblanadi.
+3. openListda Hozirgi Node'dan borish mumkin bo'lgan Nodeni qo'shadi va  
+F,G,H ni hisoblaydi.
+    openListda Takrorlandan Node bolsa, Fni eng kichik Node ga o'zgartiradi.
+    
+4. closeListdan openListdagi Fning eng kichik Node'sini qo'shadi.
+*/
+
+openList.add(startNode)  # openList boshlash Nodesiga init
+
+while openList is not empty: (openList bo'sh bo'lmasa)
+    # Hozirgi Node = openListdagi F eng kichik
+    currentNode <- node in openList having the lowest F value
+    openList.remove(currentNode)  # openListdan Hozirgi Nodeni o'chiradi
+    closeList.add(currentNode)  # closeListga Hozirgi Nodeni qo'shadi
+    
+    if goalNode is currentNode: (maqsad qilingan Node ayni bizdagi Node bo'lsa)
+        currentNode.parent.position davomiy qo'shadi.
+        Print qilgandan so'ng tugatish
+        
+    children <- currentNodega aloqador Nodelarni qoshadi
+    
+    for each child in children:
+        if child in closeList:
+            continue
+        
+        child.g = currentNode.g + child va currentNode masofasi(1)
+        child.h = child bilan manzilgacah bo'lgan masofa
+        child.f = child.g + child.h
+        
+        # child openListda joylashgan va child.g openListda takrorlangan Node
+        # g bilan birxil bo'lsa boshqa child.g ni chaqiradi.
+        
+        if child in openList and child.g > openNode.g in openList:
+            continue
+            
+        openList.add(child)
+Python kod:
+
+# Time Complexity H ga qarab har xil bo'ladi.
+# O(b^d), where d = depth, b = xar bir Nodening kichik natijalari soni
+# heapque'dan foydalanib yo'lni aniqlaganda reverse'dan foydalanish shart emas.
+
+class Node:
+    def __init__(self, parent=None, position=None):
+        self.parent = parent
+        self.position = position
+
+        self.g = 0
+        self.h = 0
+        self.f = 0
+
+    def __eq__(self, other):
+        return self.position == other.position
+
+def heuristic(node, goal, D=1, D2=2 ** 0.5):  # Diagonal Distance
+    dx = abs(node.position[0] - goal.position[0])
+    dy = abs(node.position[1] - goal.position[1])
+    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+
+
+def aStar(maze, start, end):
+    # startNode va endNode'larni boshlangich xolati
+    startNode = Node(None, start)
+    endNode = Node(None, end)
+
+    # openList, closedList'ni boshlangich xolati
+    openList = []
+    closedList = []
+
+    # openList'ga boshlash Nodesini qo'shish
+    openList.append(startNode)
+
+    # endNode'ni topguncha davomiy ishlaydi
+    while openList:
+
+        # HozirgiNode'ni belgilash
+        currentNode = openList[0]
+        currentIdx = 0
+
+        # avvaldan birxil Node openListda bor bo'libi, f'dan katta bolsa
+        # currentNode'ni openList ichidagi qiymatga almashtirish
+        for index, item in enumerate(openList):
+            if item.f < currentNode.f:
+                currentNode = item
+                currentIdx = index
+
+        # openList'dan o'chirib closedList'ga qo'shish
+        openList.pop(currentIdx)
+        closedList.append(currentNode)
+
+        # HozirgiNode manziliga current.position qo'shiladi
+        # current parentga yo'naladi. (parent = bitta oldingi korinishi)
+        if currentNode == endNode:
+            path = []
+            current = currentNode
+            while current is not None:
+                # maze yo'lni korsatish uchun qo'shimcha amallardan halos bo'ladi.
+                # x, y = current.position
+                # maze[x][y] = 7 
+                path.append(current.position)
+                current = current.parent
+            return path[::-1]  # reverse
+
+        children = []
+        # yaqin xy butun chizmasi
+        for newPosition in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+
+            # Node Joylaashuvini yangilash
+            nodePosition = (
+                currentNode.position[0] + newPosition[0],  # X
+                currentNode.position[1] + newPosition[1])  # Y
+                
+            # maze(Labirint) indeksi diapazon ichida bo'lishi kerak
+            within_range_criteria = [
+                nodePosition[0] > (len(maze) - 1),
+                nodePosition[0] < 0,
+                nodePosition[1] > (len(maze[len(maze) - 1]) - 1),
+                nodePosition[1] < 0,
+            ]
+            # bitta bo'lsa ham true bo'lsa diapazon ichida emas
+            if any(within_range_criteria):  
+                continue
+
+            # to'siq bor bo'lsa boshqa joylashuvni qidiradi
+            if maze[nodePosition[0]][nodePosition[1]] != 0:
+                continue
+
+            new_node = Node(currentNode, nodePosition)
+            children.append(new_node)
+
+        # child'lar hammasi loop'da
+        for child in children:
+
+            # child closedList'da bo'lsa continue
+            if child in closedList:
+                continue
+
+            # f, g, h qiymatlarini yangilash
+            child.g = currentNode.g + 1
+            child.h = ((child.position[0] - endNode.position[0]) **
+                       2) + ((child.position[1] - endNode.position[1]) ** 2)
+            # child.h = heuristic(child, endNode) boshqa heuristic
+            # print("position:", child.position) masofa uzunligi qiymati
+            # print("from child to goal:", child.h)
+            
+            child.f = child.g + child.h
+
+            # child openListda bo'lsa, g qiymati katta bo'lsa continue
+            if len([openNode for openNode in openList
+                    if child == openNode and child.g > openNode.g]) > 0:
+                continue
+                    
+            openList.append(child)
+
+
+def main():
+    # 1 lar bu to'siq
+    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+    start = (0, 0)
+    end = (7, 6)
+
+    path = aStar(maze, start, end)
+    print(path)
+
+
+if __name__ == '__main__':
+    main()
+    # [(0, 0), (1, 1), (2, 2), (3, 3), (4, 3), (5, 4), (6, 5), (7, 6)]
+Man’ba
+
+A-star Algoritmi
+
+Written on 2025–03–02
+
+Categories: Algorithm
+
+Contact: Kamchiliklar va takliflar uchun aloqaga chiqing.
+
+Telegram: @AkhmadKholmurodov
+
+Instagram: @joseehyuk
